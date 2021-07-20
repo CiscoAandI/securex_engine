@@ -12,7 +12,6 @@ _input = json.load(open(f'tests/inputs/{FLOW_NAME}/dont_send_to_snow.json'))
 with cProfile.Profile() as profile:
     engine = Engine(
         file_path=f'objects/automation/workflows/{FLOW_NAME}.json',
-        secret_key=os.environ['SXO_LOCAL_SECRET_KEY'],
         input=_input
     )
     engine.run()

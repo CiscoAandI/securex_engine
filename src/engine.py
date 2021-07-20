@@ -8,19 +8,15 @@ from workflow import Workflow
 from runtime_user import RuntimeUser
 from target import Target
 from core.instance_validator import Validator
-from core.decrypter import Decrypter
+from core.secret_retriever import SecretRetriever
 from data import GLOBALS
 from exceptions import StopEngineException
 from core.logger import logger
 
 
 class Engine:
-    def __init__(self, file_path, secret_key, input={}):
-        """
-        secret_key is used for decrypting the account_keys
-        """
-        self._vault = Decrypter(secret_key)
-        self._secret_key = secret_key
+    def __init__(self, file_path, input={}):
+        self._secret_retriever = SecretRetriever
         self._file_path = file_path
         self._spec = json.load(open(self._file_path))
         self.validate()
@@ -39,8 +35,7 @@ class Engine:
     
     def populate_account_keys(self):
         for user in self._spec.get('runtime_users', []):
-            with open(f'objects/account_keys/{user}.json') as f:
-                self._spec['runtime_users'][user] = json.loads(self._vault.decrypt(f.read()).decode())
+            self._spec['runtime_users'][user] = self._secret_retriever.get_account_key(user)
 
     def validate(self):
         # Validate with json schema from workflow_spec.json
@@ -88,9 +83,7 @@ if __name__ == "__main__":
     import os
     
     _input = json.load(open(sys.argv[2])) if len(sys.argv) > 2 else {}
-    import pdb; pdb.set_trace()
-    print()
-    engine = Engine(file_path=sys.argv[1], secret_key=os.environ['SXO_LOCAL_SECRET_KEY'], input=_input)
+    engine = Engine(file_path=sys.argv[1], input=_input)
     engine.run()
     json.dump({
         'activity': engine.activity,

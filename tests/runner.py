@@ -10,7 +10,6 @@ class Runner():
         
         self._engine = Engine(
             file_path=f'objects/automation/workflows/{flow_name}.json',
-            secret_key=os.environ['SXO_LOCAL_SECRET_KEY'],
             input=input_data
         )
         self._expected_output = json.load(open(f'tests/output/{flow_name}/{test_name}.json'))
