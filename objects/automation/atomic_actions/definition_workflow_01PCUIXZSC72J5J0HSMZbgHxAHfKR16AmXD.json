@@ -1,0 +1,217 @@
+{
+    "workflow": {
+        "unique_name": "definition_workflow_01PCUIXZSC72J5J0HSMZbgHxAHfKR16AmXD",
+        "name": "Thousand Eyes - Get Test Details",
+        "title": "Thousand Eyes - Get Test Details",
+        "type": "generic.workflow",
+        "base_type": "workflow",
+        "variables": [
+            {
+                "schema_id": "datatype.string",
+                "properties": {
+                    "value": "",
+                    "scope": "output",
+                    "name": "interval",
+                    "type": "datatype.string",
+                    "is_required": false,
+                    "is_invisible": false
+                },
+                "unique_name": "variable_workflow_01PJ9WT9YNYBV0dKVVUJClyyjUdpZExSUBe",
+                "object_type": "variable_workflow"
+            },
+            {
+                "schema_id": "datatype.string",
+                "properties": {
+                    "value": "",
+                    "scope": "input",
+                    "name": "testId",
+                    "type": "datatype.string",
+                    "description": "The testID with which to query the Thousand Eyes API for details.",
+                    "is_required": true,
+                    "is_invisible": false
+                },
+                "unique_name": "variable_workflow_01PCUIXZLJKWX2LlsESGfpcgq33T5Bcb2bE",
+                "object_type": "variable_workflow"
+            },
+            {
+                "schema_id": "datatype.string",
+                "properties": {
+                    "value": "",
+                    "scope": "output",
+                    "name": "response",
+                    "type": "datatype.string",
+                    "description": "API Response Body from Thousand Eyes",
+                    "is_required": false,
+                    "is_invisible": false
+                },
+                "unique_name": "variable_workflow_01PCULJBKNZEC09w1ZaL0w0RgnBhxQkZidB",
+                "object_type": "variable_workflow"
+            },
+            {
+                "schema_id": "datatype.string",
+                "properties": {
+                    "value": "",
+                    "scope": "output",
+                    "name": "agentsList",
+                    "type": "datatype.string",
+                    "is_required": false,
+                    "is_invisible": false
+                },
+                "unique_name": "variable_workflow_01PE6V74RZ8XJ6zGUeRv2VaKZOv062i6Rqp",
+                "object_type": "variable_workflow"
+            }
+        ],
+        "properties": {
+            "atomic": {
+                "atomic_group": "Cisco Thousand Eyes",
+                "is_atomic": true
+            },
+            "delete_workflow_instance": false,
+            "description": "Get Test details from /tests/{testId} endpoint within Thousand Eyes.",
+            "display_name": "Thousand Eyes - Get Test Details",
+            "runtime_user": {
+                "target_default": true
+            },
+            "target": {
+                "target_type": "web-service.endpoint",
+                "target_id": "definition_target_01P8H37WXWG376r16HEj0CPmaaeAK9vLi6r",
+                "execute_on_workflow_target": true
+            }
+        },
+        "object_type": "definition_workflow",
+        "actions": [
+            {
+                "unique_name": "definition_activity_01PCUIYBBMI5P35JsaKueMhugpMDBm03Gwx",
+                "name": "HTTP Request",
+                "title": "Get Test Details",
+                "type": "web-service.http_request",
+                "base_type": "activity",
+                "properties": {
+                    "action_timeout": 60,
+                    "allow_auto_redirect": true,
+                    "content_type": "application/json",
+                    "continue_on_error_status_code": false,
+                    "continue_on_failure": false,
+                    "display_name": "Get Test Details",
+                    "method": "GET",
+                    "relative_url": "/tests/$workflow.definition_workflow_01PCUIXZSC72J5J0HSMZbgHxAHfKR16AmXD.input.variable_workflow_01PCUIXZLJKWX2LlsESGfpcgq33T5Bcb2bE$.json",
+                    "runtime_user": {
+                        "target_default": true
+                    },
+                    "skip_execution": false,
+                    "target": {
+                        "use_workflow_target": true
+                    }
+                },
+                "object_type": "definition_activity"
+            },
+            {
+                "unique_name": "definition_activity_01PE6UIEMVHNT0NlMrbFN3r7RBQtqRpd8AC",
+                "name": "JSONPath Query",
+                "title": "Parse Response",
+                "type": "corejava.jsonpathquery",
+                "base_type": "activity",
+                "properties": {
+                    "action_timeout": 180,
+                    "continue_on_failure": false,
+                    "display_name": "Parse Response",
+                    "input_json": "$activity.definition_activity_01PCUIYBBMI5P35JsaKueMhugpMDBm03Gwx.output.response_body$",
+                    "jsonpath_queries": [
+                        {
+                            "jsonpath_query": "$.test.[0].agents",
+                            "jsonpath_query_name": "agents",
+                            "jsonpath_query_type": "string"
+                        },
+                        {
+                            "jsonpath_query": "$.test[0].interval",
+                            "jsonpath_query_name": "interval",
+                            "jsonpath_query_type": "string"
+                        }
+                    ],
+                    "skip_execution": false
+                },
+                "object_type": "definition_activity"
+            },
+            {
+                "unique_name": "definition_activity_01PCUL5EWWJI70Jd6cSMkaCvpKct8PxYBHD",
+                "name": "Set Variables",
+                "title": "Set Response",
+                "type": "core.set_multiple_variables",
+                "base_type": "activity",
+                "properties": {
+                    "continue_on_failure": false,
+                    "display_name": "Set Response",
+                    "skip_execution": false,
+                    "variables_to_update": [
+                        {
+                            "variable_to_update": "$workflow.definition_workflow_01PCUIXZSC72J5J0HSMZbgHxAHfKR16AmXD.output.variable_workflow_01PCULJBKNZEC09w1ZaL0w0RgnBhxQkZidB$",
+                            "variable_value_new": "$activity.definition_activity_01PCUIYBBMI5P35JsaKueMhugpMDBm03Gwx.output.response_body$"
+                        },
+                        {
+                            "variable_to_update": "$workflow.definition_workflow_01PCUIXZSC72J5J0HSMZbgHxAHfKR16AmXD.output.variable_workflow_01PE6V74RZ8XJ6zGUeRv2VaKZOv062i6Rqp$",
+                            "variable_value_new": "$activity.definition_activity_01PE6UIEMVHNT0NlMrbFN3r7RBQtqRpd8AC.output.jsonpath_queries.agents$"
+                        },
+                        {
+                            "variable_to_update": "$workflow.definition_workflow_01PCUIXZSC72J5J0HSMZbgHxAHfKR16AmXD.output.variable_workflow_01PJ9WT9YNYBV0dKVVUJClyyjUdpZExSUBe$",
+                            "variable_value_new": "$activity.definition_activity_01PE6UIEMVHNT0NlMrbFN3r7RBQtqRpd8AC.output.jsonpath_queries.interval$"
+                        }
+                    ]
+                },
+                "object_type": "definition_activity"
+            }
+        ],
+        "categories": [
+            "category_01P8H47BOO9FS4gqbKCHuYDfprrOuSH0jBQ"
+        ]
+    },
+    "categories": {
+        "category_01P8H47BOO9FS4gqbKCHuYDfprrOuSH0jBQ": {
+            "unique_name": "category_01P8H47BOO9FS4gqbKCHuYDfprrOuSH0jBQ",
+            "name": "Thousand Eyes",
+            "title": "Thousand Eyes",
+            "type": "basic.category",
+            "base_type": "category",
+            "description": "Actions relating to Thousand Eyes",
+            "category_type": "custom",
+            "object_type": "category"
+        }
+    },
+    "targets": {
+        "definition_target_01P8H37WXWG376r16HEj0CPmaaeAK9vLi6r": {
+            "unique_name": "definition_target_01P8H37WXWG376r16HEj0CPmaaeAK9vLi6r",
+            "name": "Thousand Eyes V6 API - Test",
+            "title": "Thousand Eyes V6 API - Test",
+            "type": "web-service.endpoint",
+            "base_type": "target",
+            "object_type": "definition_target",
+            "properties": {
+                "default_runtime_user_id": "definition_runtime_user_01P8H30W2ORUO4Cvgv6sZ2dhaHKxjrKdVQp",
+                "description": "Test",
+                "disable_certificate_validation": true,
+                "display_name": "Thousand Eyes V6 API - Test",
+                "host": "api.thousandeyes.com",
+                "ignore_proxy": false,
+                "no_runtime_user": false,
+                "path": "/v6",
+                "protocol": "https"
+            }
+        }
+    },
+    "runtime_users": {
+        "definition_runtime_user_01P8H30W2ORUO4Cvgv6sZ2dhaHKxjrKdVQp": {
+            "unique_name": "definition_runtime_user_01P8H30W2ORUO4Cvgv6sZ2dhaHKxjrKdVQp",
+            "name": "Thousand Eyes Service Account",
+            "title": "Thousand Eyes Service Account",
+            "type": "runtime_user.web-service_basic_credentials",
+            "base_type": "runtime_user",
+            "object_type": "definition_runtime_user",
+            "properties": {
+                "auth_option": "*****",
+                "basic_password": "*****",
+                "basic_username": "*****",
+                "description": "Service Account for Thousand Eyes",
+                "display_name": "Thousand Eyes Service Account"
+            }
+        }
+    }
+}
