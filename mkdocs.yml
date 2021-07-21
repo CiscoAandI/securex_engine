@@ -1,0 +1,48 @@
+site_name: SecureX Engine
+repo_url: https://github.com/CiscoAandI/securex_engine
+site_description: The documentation pages for the SecureX Engine
+site_author: Ava Thorn
+copyright: Copyright &copy; 2021 Cisco Systems, Inc.
+strict: true
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/CiscoAandI
+# extra_css:
+#   - css/hint.min.css
+# extra_javascript:
+#   - js/config.js
+#   - https://polyfill.io/v3/polyfill.min.js?features=es6
+#   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+theme:
+  icon:
+    repo: fontawesome/brands/github
+  name: material
+  logo: images/cx-logo.png
+  # features:
+  #   - header.autohide
+  palette:
+    - scheme: default
+      primary: blue
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+plugins:
+  - search
+  - tooltips
+  - macros
+markdown_extensions:
+  - admonition            # Permits admonitions
+  - pymdownx.details      # Permits collapsible admonitions
+  - pymdownx.tabbed       # Permits tabs in code blocks/admonitions
+  - pymdownx.superfences  # Permits code within admonitions
+  - attr_list             # Permits aligning images left/right
+  - pymdownx.emoji:       # Used for displaying icons
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.arithmatex:  # Allows mathematical formulas (used in some of the analytics and the "how long" command)
+      generic: true

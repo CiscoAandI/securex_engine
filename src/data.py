@@ -1,4 +1,5 @@
 import math
+from core.secret_retriever import SecretRetriever
 
 GLOBAL_TIMEOUT = math.inf
 ATOMIC_ACTION_PATH = "objects/automation/atomic_actions/"
@@ -31,3 +32,4 @@ GLOBALS = {
         }
     }
 }
+ACCOUNT_KEYS = SecretRetriever.get_account_key()

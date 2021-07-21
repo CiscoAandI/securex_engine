@@ -9,7 +9,7 @@ from runtime_user import RuntimeUser
 from target import Target
 from core.instance_validator import Validator
 from core.secret_retriever import SecretRetriever
-from data import GLOBALS
+from data import GLOBALS, ACCOUNT_KEYS
 from exceptions import StopEngineException
 from core.logger import logger
 
@@ -35,7 +35,7 @@ class Engine:
     
     def populate_account_keys(self):
         for user in self._spec.get('runtime_users', []):
-            self._spec['runtime_users'][user] = self._secret_retriever.get_account_key(user)
+            self._spec['runtime_users'][user] = ACCOUNT_KEYS[user]
 
     def validate(self):
         # Validate with json schema from workflow_spec.json

@@ -7,13 +7,13 @@ from runner import Runner
 class TestFoo:
     FLOW_NAME = 'definition_workflow_01P8H5A2BA6CY0wPhlr4vRoN1QpEONdaebQ'
 
-    @pytest.mark.record
+    @pytest.mark.vcr
     def test_positive_1(self):
         runner = Runner(flow_name=TestFoo.FLOW_NAME, test_name='1')
         output = runner.run()
         assert output == runner._expected_output
 
-    # @pytest.mark.record
+    # @pytest.mark.vcr
     def test_positive_1(self):
         import requests_mock
         with requests_mock.Mocker() as m:
