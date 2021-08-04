@@ -15,7 +15,11 @@ from core.logger import logger
 
 
 class Engine:
-    def __init__(self, file_path, input={}):
+    def __init__(self, file_path, input={}, record=False, playback=False):
+        # Record does nothing today but should eventually convert the logs into a cassette
+        self._record = record
+        
+        self._playback = playback
         self._secret_retriever = SecretRetriever
         self._file_path = file_path
         self._spec = json.load(open(self._file_path))
@@ -81,9 +85,22 @@ class Engine:
 
 if __name__ == "__main__":
     import os
+    import argparse
     
-    _input = json.load(open(sys.argv[2])) if len(sys.argv) > 2 else {}
-    engine = Engine(file_path=sys.argv[1], input=_input)
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument('workflow', type=str, help='The workflow to execute.')
+    parser.add_argument('-p', '--playback', action='store_true', help='Whether or not to treat the test as'
+                        ' a recorded test and play it back from a previously recorded VCR. In a playback, things like '
+                        '"sleeps" will be disabled so that tests aren\'t waiting for long periods for pre-existing VCR data.')
+    parser.add_argument('-r', '--record', action='store_true', help='Whether or not to record or re-record '
+                        'a VCR from the real execution. This will be required in order to playback any workflows '
+                        'using the --playback argument')
+    parser.add_argument('-i', '--input', type=str, help='The path to a previously recorded VCR cassette.')
+    
+    args = parser.parse_args()
+    
+    engine = Engine(file_path=args.workflow, input=json.load(open(args.input)), record=args.record, playback=args.playback)
     engine.run()
     json.dump({
         'activity': engine.activity,

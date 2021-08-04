@@ -6,6 +6,4 @@ WORKDIR /engine
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["python", "src/engine.py"]

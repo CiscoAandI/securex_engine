@@ -6,13 +6,13 @@ SEE DOCS HERE: TODO
 
 You must first set the `SXO_LOCAL_SECRET_KEY` environment variable to the decryption secret key. Once you have done this, you can invoke with the following command:
 
-`make run-workflow workflow=<workflow id> scenario=<scenario name>`
+`make run workflow=<workflow id> scenario=<scenario name>`
 
 Scenario ID must match a valid json input scenario from tests/inputs/<workflow_id>/
 
 ## Example
 
-`make run-workflow workflow=definition_workflow_01PLT6C492IVT09dl7dcdzSgu8NgQBuOu1Z scenario=dont_send_to_snow`
+`make run workflow=definition_workflow_01PLT6C492IVT09dl7dcdzSgu8NgQBuOu1Z scenario=dont_send_to_snow`
 
 # TODO
 
