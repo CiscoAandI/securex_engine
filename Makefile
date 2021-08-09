@@ -2,7 +2,7 @@ SECRET_VARS=-e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY
 
 .PHONY: build $(tag)
 build:
-	docker build -t securex_engine:$(tag) ops/containers/engine/
+	docker build -t ghcr.io/ciscoaandi/securex_engine:$(tag) --file ops/containers/engine/Dockerfile .
 
 .PHONY: run $(tag) $(workflow) $(scenario) $(flags)
 run:
