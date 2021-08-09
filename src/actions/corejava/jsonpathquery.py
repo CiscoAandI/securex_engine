@@ -15,15 +15,23 @@ from actions import BaseAction
 
 # Memoize
 class Action(BaseAction):
+    def string_cast(self, x):
+        x = json.dumps(x)
+        # Need to remove "'s at the beginning and end of the json dumps if they exist.
+        if x.startswith('"') and x.endswith('"'):
+            return x[1:-1]
+        return x
     def execute(self, input_json, jsonpath_queries):
         result = {}
         input_json = json.loads(input_json)
         for path in jsonpath_queries:
             matches = self._get_matches(input_json, path['jsonpath_query'])
-            
             # This leads to the annoying SXO bug where the first value is popped from the list
             if isinstance(matches, (list, tuple)) and len(matches) == 1:
-                output = json.dumps(matches[0]) if isinstance(matches[0], (list, dict, tuple)) else matches[0]
+                # We used to do this, but SXO always json dumps here, even if it's a string already
+                # So we must imitate this bug. lmao.
+                # output = json.dumps(matches[0]) if isinstance(matches[0], (list, dict, tuple)) else matches[0]
+                output = self.string_cast(matches[0])
             elif isinstance(matches, dict):
                 output = json.dumps(matches)
             elif isinstance(matches, (int, bool)):

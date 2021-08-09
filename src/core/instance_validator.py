@@ -15,7 +15,7 @@ class Validator:
 
 
 if __name__ == "__main__":
-    for location, folders, files in os.walk('objects/automation'):
+    for location, folders, files in os.walk('.'):
         for file in files:
             if file.endswith('.json'):
                 file_location = os.path.join(location, file)

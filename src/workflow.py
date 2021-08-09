@@ -6,7 +6,7 @@ class Workflow(Base):
     @property
     def actions(self):
         return [Action(self._engine, i) for i in self._spec.get('actions', [])]
-    
+
     @property
     def unique_name(self):
         return self._spec.get('unique_name')
@@ -33,6 +33,14 @@ class Workflow(Base):
     @property
     def variables(self):
         return self._spec.get('variables', {})
+    
+    @property
+    def name(self):
+        return self._spec.get('name', {})
+    
+    @property
+    def title(self):
+        return self._spec.get('title', {})
     
     @property
     def properties(self):

@@ -11,7 +11,7 @@ _input = json.load(open(f'tests/inputs/{FLOW_NAME}/dont_send_to_snow.json'))
 
 with cProfile.Profile() as profile:
     engine = Engine(
-        file_path=f'objects/automation/workflows/{FLOW_NAME}.json',
+        file_path=f'./workflows/{FLOW_NAME}.json',
         input=_input
     )
     engine.run()

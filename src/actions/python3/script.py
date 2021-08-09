@@ -1,22 +1,34 @@
 import sys
+import json
+
 from actions import BaseAction
 
 class Action(BaseAction):
-    def execute(self, script, script_arguments, script_queries):
+    def string_cast(self, x):
+        if not isinstance(x, str):
+            x = json.dumps(x)
+            # Need to remove "'s at the beginning and end of the json dumps if they exist.
+            if x.startswith('"') and x.endswith('"'):
+                return x[1:-1]
+        return x
+
+    def execute(self, script, script_queries, script_arguments=[]):
         # Mock sys.argv
         og_argv = sys.argv
-        sys.argv = ['FAKE_SCRIPT_NAME.py'] + script_arguments
+        args = [self.string_cast(i) for i in script_arguments]
+        sys.argv = ['FAKE_SCRIPT_NAME.py'] + args
         
         try:
             # Should use a docker container to sandbox this probably.
             exec(script)
         finally:
             og_argv = sys.argv
-        
-        output = {}
-        
+
+        # Be careful here not to overwrite script arguments
+        a23dc2368_7085_483a_a77c_c1ebdb2a779e = {}
+
         # Parse script queries
         for script_query in script_queries:
-            output[script_query['script_query_name']] = str(locals()[script_query['script_query']])
+            a23dc2368_7085_483a_a77c_c1ebdb2a779e[script_query['script_query_name']] = str(locals()[script_query['script_query']])
 
-        return {'script_queries': output}
+        return {'script_queries': a23dc2368_7085_483a_a77c_c1ebdb2a779e}

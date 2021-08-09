@@ -7,31 +7,43 @@ from base import Base
 from workflow import Workflow
 from runtime_user import RuntimeUser
 from target import Target
+from target_group import TargetGroup
 from core.instance_validator import Validator
-from core.secret_retriever import SecretRetriever
 from data import GLOBALS, ACCOUNT_KEYS
 from exceptions import StopEngineException
 from core.logger import logger
 
 
 class Engine:
-    def __init__(self, file_path, input={}, record=False, playback=False):
-        # Record does nothing today but should eventually convert the logs into a cassette
-        self._record = record
-        
-        self._playback = playback
-        self._secret_retriever = SecretRetriever
-        self._file_path = file_path
-        self._spec = json.load(open(self._file_path))
-        self.validate()
+    def __init__(self, spec, input={}, is_subworkflow=False):
+        self.is_subworkflow = is_subworkflow
+
+        self._spec = spec
+        if not is_subworkflow:
+            self.validate()
         
         self.populate_account_keys()
+            
+        self.local = {}
+        self.output = {}
+        self.input = {}
+        
+        # Check for required inputs
+        if not is_subworkflow:
+            for variable in self._spec.get('workflow', {}).get('variables', []):
+                if variable['properties']['scope'] == 'input' and \
+                        not input.get(variable['unique_name'], variable['properties']['value']) and \
+                        variable['properties']['is_required']:
+                    raise Exception(f"Input Argument '{variable['properties']['name']}' is required but not provided!")
+                    
+        # TODO: Clean this up
         for variable_type in ['input', 'output', 'local']:
-            setattr(self, variable_type, {
-                i['unique_name']: input.get(i['unique_name'], i['properties']['value'])
-                for i in self._spec.get('workflow', {}).get('variables', [])
-                if i['properties']['scope'] == variable_type
-            })
+            for i in self._spec.get('workflow', {}).get('variables', []):
+                setattr(self, variable_type, {
+                    **getattr(self, variable_type, {}),
+                    i['unique_name']: input.get(i['unique_name'], i['properties']['value'])
+                })
+
         self.activity = {}
         # Need to name this "global" since that's what SXO calls it, however doing self.global = is a syntax error
         # for obvious python reasons.
@@ -49,11 +61,19 @@ class Engine:
                 logger.error(error)
             raise errors[0]
         else:
-            logger.info(f"No errors in {self._file_path}")
+            logger.info(f"No errors in spec")
 
     @property
     def workflow(self):
         return Workflow(self, self._spec.get('workflow', {}))
+
+    @property
+    def subworkflows(self):
+        return [Engine(
+            i,
+            # account_keys=self._spec['runtime_users'][user]
+            is_subworkflow=True,
+        ) for i in self._spec.get('subworkflows', {})]
     
     @property
     def variables(self):
@@ -62,21 +82,17 @@ class Engine:
     @property
     def targets(self):
         return {k: Target(self, v) for k, v in self._spec.get('targets', {}).items()}
-    
+
     @property
-    def target(self):
-        if len(self.targets) == 1:
-            return [i for i in self.targets.values()][0]
-        else:
-            # More than one target is specified, this workflow does not have a singular target
-            raise NotImplementedError
+    def target_groups(self):
+        return {k: TargetGroup(self, v) for k, v in self._spec.get('target_groups', {}).items()}
 
     @property
     def runtime_users(self):
         return {k: RuntimeUser(self, v) for k, v in self._spec.get('runtime_users', {}).items()}
 
     def run(self):
-        try:
+        try:        
             return self.workflow.run()
         except StopEngineException as e:
             print(e)
@@ -90,19 +106,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
     parser.add_argument('workflow', type=str, help='The workflow to execute.')
-    parser.add_argument('-p', '--playback', action='store_true', help='Whether or not to treat the test as'
-                        ' a recorded test and play it back from a previously recorded VCR. In a playback, things like '
-                        '"sleeps" will be disabled so that tests aren\'t waiting for long periods for pre-existing VCR data.')
-    parser.add_argument('-r', '--record', action='store_true', help='Whether or not to record or re-record '
-                        'a VCR from the real execution. This will be required in order to playback any workflows '
-                        'using the --playback argument')
     parser.add_argument('-i', '--input', type=str, help='The path to a previously recorded VCR cassette.')
     
     args = parser.parse_args()
     
-    engine = Engine(file_path=args.workflow, input=json.load(open(args.input)), record=args.record, playback=args.playback)
+    engine = Engine(
+        spec=json.load(open(args.workflow)),
+        input=json.load(open(args.input)),
+    )
     engine.run()
     json.dump({
         'activity': engine.activity,
         'output': engine.output
-    }, open('log.json', 'w'), default=dict, indent=4, sort_keys=False)
+    }, open('SXO/log.json', 'w'), default=dict, indent=4, sort_keys=False)

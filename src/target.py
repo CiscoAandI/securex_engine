@@ -21,7 +21,7 @@ class Target(Base):
     
     @property
     def type(self):
-        return self.properties.get('type', '')
+        return self._spec.get('type', '')
 
     @property
     def disable_certificate_validation(self):
@@ -34,6 +34,10 @@ class Target(Base):
     @property
     def path(self):
         return self.properties.get('path', '')
+
+    @property
+    def display_name(self):
+        return self.properties.get('display_name', '')
 
     @property
     def protocol(self):

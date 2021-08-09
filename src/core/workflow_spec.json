@@ -870,6 +870,9 @@
                     "x-go-name": "UniqueName"
                 }
             },
+            "required": [
+                "name"
+            ],
             "title": "CategoryExport ...",
             "type": "object",
             "x-go-package": "bitbucket-eng-sjc1.cisco.com/bitbucket/nextg/be-importexport/models"
@@ -2620,8 +2623,7 @@
                 "columns": {
                     "items": {
                         "additionalProperties": {
-                            "properties": {},
-                            "type": "object"
+                            "$ref": "#/definitions/SPYGLASS_CORRECTION_SPEC"
                         },
                         "type": "object"
                     },
@@ -3445,13 +3447,15 @@
                     "x-go-name": "Scope"
                 },
                 "type": {
-                    "description": "Type of variable. Type can be 'datatype.boolean', 'datatype.string', 'datatype.number' or 'datatype.table'",
+                    "description": "Type of variable. Type can be 'datatype.boolean', 'datatype.string', 'datatype.number', 'datatype.secure_string', 'datatype.boolean', or 'datatype.table'",
                     "type": "string",
                     "enum": [
                         "datatype.string",
                         "datatype.number",
                         "datatype.table",
-                        "datatype.boolean"
+                        "datatype.boolean",
+                        "datatype.secure_string",
+                        "datatype.integer"
                     ],
                     "x-go-name": "Type"
                 },

@@ -5,14 +5,14 @@ from engine import Engine
 
 class Runner():
     def __init__(self, flow_name, test_name):
-        input_path = f'tests/inputs/{flow_name}/{test_name}.json'
+        input_path = f'./cassettes/{flow_name}/{test_name}.json'
         input_data = json.load(open(input_path)) if os.path.exists(input_path) else {}
         
         self._engine = Engine(
-            file_path=f'objects/automation/workflows/{flow_name}.json',
+            file_path=f'./workflows/{flow_name}.json',
             input=input_data
         )
-        self._expected_output = json.load(open(f'tests/output/{flow_name}/{test_name}.json'))
+        self._expected_output = json.load(open(f'./cassettes/{flow_name}/{test_name}.json'))
     
     def run(self):
         # Test
