@@ -3,7 +3,7 @@ import os
 
 from engine import Engine
 from actions import BaseAction
-from data import ATOMIC_ACTION_PATH
+from data import ATOMIC_ACTION_PATH, SUB_WORKFLOW_PATH
 
 
 def resolve_path(path, file):
@@ -19,7 +19,11 @@ def subengine(engine, unique_name, workflow_id, atomic=True, **kwargs):
     if atomic:
         spec = json.load(open(resolve_path(ATOMIC_ACTION_PATH, workflow_id + '.json')))
     else:
-        spec = [i for i in engine.subworkflows if i.workflow.unique_name == workflow_id][0]._spec
+        # Subworkflows inside the workflow should be ignored because importing the top-level workflow
+        # before the subworkflow will *NOT* update any of the subworkflows. Instead they will just be marked as invalid
+        # thus we should pull the workflow from the workflow path which is committed independently to git.
+        spec = json.load(open(resolve_path(SUB_WORKFLOW_PATH, workflow_id + '.json')))
+        # spec = [i for i in engine.subworkflows if i.workflow.unique_name == workflow_id][0]._spec
         
     # i'm not sure what to do with these so remove them for now.
     # TODO: maybe try to pass them in and use them?? haven't encountered a need to do that yet.
