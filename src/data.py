@@ -2,6 +2,7 @@ import math
 import json
 import re
 from core.secret_retriever import SecretRetriever
+import fnmatch
 
 GLOBAL_TIMEOUT = math.inf
 ATOMIC_ACTION_PATH = "SXO/Atomics/"
@@ -12,7 +13,7 @@ OPERATOR_MAP = {
     'eq': lambda x, y: str(x) == str(y),  # Equals
     'eqi': lambda x, y: str(x).casefold() == str(y).casefold(),  # Equals ignore case
     'mregex': lambda x, y: re.match(y, x) is not None,  # Matches regular expression
-    'mw': None,  # Matches wild card
+    'mw': lambda x, y: fnmatch.filter([x], y),  # Matches wild card
     'ne': lambda x, y: str(x) != str(y),  # Not Equal
     'and': lambda x, y: str(x).lower() == 'true' and str(y).lower() == 'true',
     'or': lambda x, y: str(x).lower() == 'true' or str(y).lower() == 'true',
