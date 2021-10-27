@@ -10,10 +10,13 @@ class Action(BaseAction):
         # flood -> floof -> xloox
         # Rather than what users probably want which is
         # flood -> floof -> xloof
-        
+
         for replacement in replace_list:
             input_string = input_string.replace(replacement['replaced_string'], replacement['replacement_string'])
-        
+
         return {
             'result_string': input_string
         }
+
+    def export(self, input_string, replace_list):
+        return ""

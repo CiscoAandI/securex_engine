@@ -1,4 +1,6 @@
+from data import SECURE_STRINGS
 import re
+
 
 class Parser:
     def __init__(self, workflow, string, target=None):
@@ -34,7 +36,13 @@ class Parser:
         return self._string
         
     def get_path(self, path):
-        return self.get_variable_by_path(path)[1]
+        result = self.get_variable_by_path(path)[1]
+        
+        # If it's a secret string it will be *****, pull secret from secrets manager
+        # based on unique name if this is the case
+        if result == '*****':
+            return SECURE_STRINGS.get(path, result)
+        return result
     
     def set_path(self, value):
         variable, _ = self.get_variable_by_path(self._string)
@@ -63,7 +71,7 @@ class Parser:
             return None, getattr(self.target, self.path_list[0])
         
         obj = self
-        
+
         # If first key is "workflow" peak at second key to pull the correct workflow from the "subworkflows" key
         if self.path_list[0] == "workflow" and self.workflow.unique_name != self.path_list[1]:
             for subworkflow in self.workflow._engine.subworkflows:

@@ -13,10 +13,21 @@ class Workflow(Base):
     
     def run(self):
         logger.info("Running workflow")
+        result = []
         for action in self.actions:
-            logger.debug(action.run())
+            result.append(action.run())
+            logger.debug(result)
+
+        # logger.info("Collecting code")
+        # self._collect_code(result)
+
         logger.info("Workflow completed")
         return self._engine.activity
+
+    def _collect_code(self, result):
+        self._engine._code.append({
+            'unique_name': self.unique_name, 'code': [i['__code__'] for i in result if i]
+        })
     
     @property
     def input(self):

@@ -46,6 +46,10 @@ def subengine(engine, unique_name, workflow_id, atomic=True, **kwargs):
     # Run the subengine
     subengine.run()
     engine.activity = {**engine.activity, unique_name: subengine.activity}
+    engine._code.append({
+        'unique_name': unique_name,
+        'code': subengine._code
+    })
     
     # Output should be sent out with the unique_names as keys rather than the non-unique names
     # This is so that the other calls can reference these variables using the proper SXO variable syntax

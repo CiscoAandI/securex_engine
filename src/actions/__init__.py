@@ -30,9 +30,9 @@ class BaseAction:
         self.workflow_id = workflow_id
         self.action_timeout = action_timeout
         self.unique_name = unique_name
-        self.result = self._executor(self.execute, **kwargs)
+        self.result = self._executor(**kwargs)
     
-    def _executor(self, f, **kwargs):
+    def _executor(self, **kwargs):
         logger.debug(f"Continue On Failure: {self.continue_on_failure}")
         logger.info(f"Display Name: {self.display_name}")
         logger.debug(f"Skip Execution: {self.skip_execution}")
@@ -44,7 +44,7 @@ class BaseAction:
         new_kwargs = {}
         for k, v in kwargs.items():
             # If underscore arg is provided, don't mutate args
-            if f'_{k}' in inspect.getargs(f.__code__)._asdict().get('args', []):
+            if f'_{k}' in inspect.getargs(self.execute.__code__)._asdict().get('args', []):
                 new_kwargs[f"_{k}"] = v
             else:
                 new_kwargs[k] = Parser(self._engine.workflow, v).parse()
@@ -63,7 +63,8 @@ class BaseAction:
                 self._engine.activity[self.unique_name] = variable_map
                 
                 start_time = datetime.datetime.utcnow()
-                variable_map['output'] = f(**new_kwargs) or {}
+                variable_map['output'] = self.execute(**new_kwargs) or {}
+                variable_map['output']['succeeded'] = True
                 end_time = datetime.datetime.utcnow()
                 variable_map['elapsed_time'] = str(end_time - start_time)
                 variable_map['start_time'] = start_time.isoformat()

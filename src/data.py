@@ -78,3 +78,4 @@ GLOBALS = {
     }
 }
 ACCOUNT_KEYS = SecretRetriever.get_account_key()
+SECURE_STRINGS = SecretRetriever.get_secure_strings()
