@@ -29,6 +29,9 @@ class Action(BaseAction):
 
         # Parse script queries
         for script_query in script_queries:
-            a23dc2368_7085_483a_a77c_c1ebdb2a779e[script_query['script_query_name']] = str(locals()[script_query['script_query']])
+            a23dc2368_7085_483a_a77c_c1ebdb2a779e1 = locals()[script_query['script_query']]
+            if not isinstance(a23dc2368_7085_483a_a77c_c1ebdb2a779e1, bool):
+                a23dc2368_7085_483a_a77c_c1ebdb2a779e1 = str(a23dc2368_7085_483a_a77c_c1ebdb2a779e1)
+            a23dc2368_7085_483a_a77c_c1ebdb2a779e[script_query['script_query_name']] = a23dc2368_7085_483a_a77c_c1ebdb2a779e1
 
         return {'script_queries': a23dc2368_7085_483a_a77c_c1ebdb2a779e}

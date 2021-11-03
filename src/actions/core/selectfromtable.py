@@ -68,7 +68,4 @@ class Action(BaseAction):
             }
         
         raise Exception(f"Query '{where_clause}' did not match any rows in table.")
-
-    def export(self, columns, input_table, number_of_rows, persist_output, sorting, where_clause):
-        return ""
         

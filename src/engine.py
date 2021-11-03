@@ -112,9 +112,10 @@ class Engine:
                 # Indent one level here???
                 result += self._generate_python(child_branch, depth + 1)
             else:
-                result += self._code_indent(self._code_comment(f'{name} BEGIN\n'), depth)
-                result += self._code_clean(self._code_indent(self._code_comment(child_branch), depth))
-                result += self._code_indent(self._code_comment(f'{name} END\n'), depth)
+                # result += self._code_indent(self._code_comment(f'{name} BEGIN\n'), depth)
+                result = child_branch
+                # result += self._code_clean(self._code_indent(child_branch, depth))
+                # result += self._code_indent(self._code_comment(f'{name} END\n'), depth)
         return result
 
     def _code_comment(self, code):
@@ -133,15 +134,22 @@ class Engine:
             result = self.workflow.run()
 
             if not self.is_subworkflow:
-                pass
-                # raw = '\n'.join([self._generate_python(i) for i in self._code])
-                # with open(self._code_file, 'w') as f:
-                #     f.write(raw)
+                raw = '\n'.join([self._generate_python(i) for i in self._code])
+                raw = """
+# This generation script is not idempotent.
+# DO NOT GENERATE PYTHON CODE. THIS IS BAD.
+
+# Create global data variable lol
+data = {}
+""" + raw
+                with open(self._code_file, 'w') as f:
+                    f.write(raw)
 
             return result
         except StopEngineException as e:
             print(e)
-            return self.activity
+            raise
+            # return self.activity
 
 
 if __name__ == "__main__":

@@ -1,10 +1,13 @@
 import inspect
+import os
 import pprint
 import traceback
 import datetime
+import uuid
 
 from variable_parser import Parser
 from data import GLOBAL_TIMEOUT
+from jinja2 import Environment, FileSystemLoader
 from core.logger import logger
 
 class BaseAction:
@@ -65,6 +68,22 @@ class BaseAction:
                 start_time = datetime.datetime.utcnow()
                 variable_map['output'] = self.execute(**new_kwargs) or {}
                 variable_map['output']['succeeded'] = True
+                # TEMP REMOVE IF
+                # variable_map['__code__'] = self.export(**new_kwargs) if hasattr(self, 'export') else 'HAHA THIS SHOULDNT BE HERE'
+                
+                template_file = self.execute.__func__.__module__.replace('actions.', '').replace('.', '/')
+                template_path = os.path.join('src/templates', template_file + '.jinja')
+                if os.path.exists(template_path):
+                    template = template_path
+                else:
+                    template = 'src/templates/base.jinja'
+
+                variable_map['__code__'] = Environment(loader=FileSystemLoader("src/templates/")).from_string(open(template).read()).render(
+                    kwargs=new_kwargs,
+                    unique_name=self.unique_name,
+                    function_name=self.execute.__func__.__module__,
+                    description=self.description
+                )
                 end_time = datetime.datetime.utcnow()
                 variable_map['elapsed_time'] = str(end_time - start_time)
                 variable_map['start_time'] = start_time.isoformat()

@@ -17,6 +17,3 @@ class Action(BaseAction):
         return {
             'result_string': input_string
         }
-
-    def export(self, input_string, replace_list):
-        return ""

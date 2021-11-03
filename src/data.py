@@ -77,5 +77,6 @@ GLOBALS = {
         }
     }
 }
-ACCOUNT_KEYS = SecretRetriever.get_account_key()
-SECURE_STRINGS = SecretRetriever.get_secure_strings()
+_secrets = SecretRetriever()
+ACCOUNT_KEYS = _secrets.account_keys
+SECURE_STRINGS = _secrets.secure_strings

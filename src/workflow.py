@@ -18,8 +18,8 @@ class Workflow(Base):
             result.append(action.run())
             logger.debug(result)
 
-        # logger.info("Collecting code")
-        # self._collect_code(result)
+        logger.info("Collecting code")
+        self._collect_code(result)
 
         logger.info("Workflow completed")
         return self._engine.activity

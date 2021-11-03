@@ -31,7 +31,7 @@ class Action(BaseAction):
         # Why does SXO do an array for cookies and response headers?? This seems dumb.
         return {
             'response_body': response.text,
-            'cookie': [i for i in response.cookies],
+            'cookie': response.cookies.get_dict(),
             'response_headers': [{'name': k, 'value': v} for k, v in response.headers.items()],
             'status_code': response.status_code,
             'status_text': response.reason,

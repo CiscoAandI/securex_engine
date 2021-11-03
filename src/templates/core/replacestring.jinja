@@ -1,0 +1,16 @@
+{% extends "base.jinja" %}
+
+{{ code }}
+_ = {{ kwargs }}
+
+for _a in _.replace_list:
+    _.input_string = _.input_string.replace(_a['replaced_string'],_a['replacement_string'])
+
+data["{{ unique_name }}"] {
+    'result_string': _.input_string
+}
+
+# Have to delete all variables used in script because auto generation is bad
+del _
+del _a
+{{ code }}
